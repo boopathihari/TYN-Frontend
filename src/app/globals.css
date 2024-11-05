@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* global.css or TimelinePOCChart.module.css */
+
+.bar-success {
+  fill: #28a745;
+}
+
+.bar-warning {
+  fill: #ffc107;
+}
+
+.bar-info {
+  fill: #17a2b8;
+}
