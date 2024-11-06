@@ -83,8 +83,8 @@ const EnterpriseEngagementChart = () => {
           size: 12,
         },
         formatter: (value: number) => value, // Show the count inside the pie
-        anchor: 'center', // Ensure the label is anchored inside the pie slice
-        align: 'center', // Center-align the label inside the pie
+        anchor: 'center' as const, // Ensure the label is anchored inside the pie slice
+        align: 'center' as const, // Center-align the label inside the pie
       },
     },
     maintainAspectRatio: false, // Disable aspect ratio to control size
