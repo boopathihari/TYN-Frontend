@@ -1,4 +1,3 @@
-// tynadmin/page.tsx
 "use client";
 
 import GroupBoxPlot from '../../components/GroupBoxPlot';
@@ -9,6 +8,7 @@ import BoxPlot from '../../components/SingleBoxPlot';
 import StackedColumnChart from '../../components/StackedColumnPlot';
 import QueryFocus from '../../components/QueryFocus';
 import StartupAvgResponseTime from '../../components/StartupAvgResponseTime';
+import GroupedBar from '../../components/GroupedBar';
 
 const dataValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 10];
 const data = [
@@ -23,7 +23,13 @@ export default function Home() {
         {/* First Column: Invited and Accepted Enterprise users (4 grid span) */}
         <div className="col-span-4 bg-white p-4 shadow-md rounded-lg flex flex-col">
           <h2 className="text-xl font-bold mb-4 text-center">Invited and Accepted Enterprise users</h2>
-          <GroupedBarChart/>
+          <GroupedBar
+                            endpoint="http://localhost:8000/api/industriesCount/"
+                            categoryKey="industry"
+                            invitedKey="invited_count"
+                            acceptedKey="accepted_count"
+                            chartHeight={500}
+            />
         </div>
 
         {/* Second Column: Query Focus (2 grid span) */}
@@ -38,13 +44,13 @@ export default function Home() {
           <div className="bg-white p-4 shadow-md rounded-lg flex flex-col">
             <h2 className="text-xl font-bold mb-4 text-center">Enterprise User Status</h2>
             <SemiCircularGauge
-              endpoint="http://localhost:8000/api/userStatus/"
-              labels={['Active', 'Inactive']}
-              backgroundColors={['#4dabf7', '#dee2e6']}
-              hoverBackgroundColors={['#4dabf7', '#dee2e6']}
-              size={250}
-              cutoutPercentage="70%"
-              statusKeys={{ receivedKey: 'status_type', acceptedKey: 'status_type' }}
+                    endpoint="http://localhost:8000/api/status-count/"
+                    labels={['Active', 'Inactive']}
+                    backgroundColors={['#4dabf7', '#dee2e6']}
+                    hoverBackgroundColors={['#4dabf7', '#dee2e6']}
+                    size={250}
+                    cutoutPercentage="70%"
+                    statusKeys={{ statusKey: 'status' }}
             />
           </div>
           {/* Average session by users */}
@@ -60,9 +66,9 @@ export default function Home() {
           <div className="bg-white p-4 shadow-md rounded-lg flex flex-col">
             <h2 className="text-xl font-bold mb-4 text-center">User Personas</h2>
             <PieChart 
-              endpoint="http://localhost:8000/api/personasStatus/"
-              backgroundColors={['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']}
-              size={300}
+                        endpoint="http://localhost:8000/api/user-persona-count/"
+                        backgroundColors={['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']}
+                        size={300}
             />
           </div>
           {/* Startups Avg Connection Response */}
@@ -75,7 +81,7 @@ export default function Home() {
         {/* Startup categories occupying the entire row, 6 vertical grid (12 grid span) */}
         <div className="col-span-12 bg-white p-4 shadow-md rounded-lg flex flex-col mt-6">
           <h2 className="text-xl font-bold mb-4 text-center">Startup categories</h2>
-          <StackedColumnChart/>
+          <StackedColumnChart apiUrl="http://localhost:8000/api/startup-category/" />
         </div>
 
       </div>
