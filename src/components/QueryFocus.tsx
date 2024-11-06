@@ -20,12 +20,12 @@ const QueryFocus: React.FC<QueryFocusProps> = ({ values }) => {
   };
 
   return (
-    <div className="p-4 bg-gray-100 w-20 rounded-lg text-left">
+    <div className="p-4 bg-gray-100 rounded-lg text-center">
       <ul className="space-y-2">
         {values.map((value, index) => (
-          <li key={index} className="flex items-center justify-between">
+          <li key={index} className="flex items-center text-center">
             <span className={`w-4 h-4 rounded-full ${getColor(value)}`}></span>
-            <span className="text-sm text-gray-700">{value}</span>
+            <span className="text-sm pl-4 text-black">{value}</span>
           </li>
         ))}
       </ul>
