@@ -18,7 +18,7 @@ type SemiCircularGaugeProps = {
   hoverBackgroundColors: string[];
   size?: number;
   cutoutPercentage?: string;
-  statusKeys: { receivedKey: string; acceptedKey: string };
+  statusKeys: { statusKey: string };
 };
 
 const SemiCircularGauge: React.FC<SemiCircularGaugeProps> = ({
@@ -30,7 +30,7 @@ const SemiCircularGauge: React.FC<SemiCircularGaugeProps> = ({
   cutoutPercentage = '70%',
   statusKeys,
 }) => {
-  const [data, setData] = useState<{ accepted: number; received: number } | null>(null);
+  const [data, setData] = useState<{ active: number; inactive: number } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,15 +38,17 @@ const SemiCircularGauge: React.FC<SemiCircularGaugeProps> = ({
         const response = await fetch(endpoint);
         const result = await response.json();
 
-        const accepted = result.find(
-          (item: any) => item[statusKeys.acceptedKey]?.toLowerCase() === 'accepted' || item[statusKeys.acceptedKey]?.toLowerCase() === 'active'
+        // Extract counts for "Active" and "Inactive" statuses
+        const activeCount = result.find(
+          (item: any) => item[statusKeys.statusKey]?.toLowerCase() === 'active'
         )?.count || 0;
 
-        const received = result.find(
-          (item: any) => item[statusKeys.receivedKey]?.toLowerCase() === 'received' || item[statusKeys.receivedKey]?.toLowerCase() === 'inactive'
+        const inactiveCount = result.find(
+          (item: any) => item[statusKeys.statusKey]?.toLowerCase() === 'inactive'
         )?.count || 0;
 
-        setData({ accepted, received });
+        setData({ active: activeCount, inactive: inactiveCount });
+        console.log(data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -60,7 +62,7 @@ const SemiCircularGauge: React.FC<SemiCircularGaugeProps> = ({
     datasets: [
       {
         label: '',
-        data: data ? [data.accepted, data.received] : [0, 0],
+        data: data ? [data.active, data.inactive] : [0, 0],
         backgroundColor: backgroundColors,
         hoverBackgroundColor: hoverBackgroundColors,
         borderWidth: 0,
@@ -88,7 +90,7 @@ const SemiCircularGauge: React.FC<SemiCircularGaugeProps> = ({
           weight: 600,
           size: 14, 
         },
-        formatter: (value: number) => value, // Display only the count
+        formatter: (value: number) => value,
         anchor: 'center',
         align: 'center',
       },
@@ -105,7 +107,7 @@ const SemiCircularGauge: React.FC<SemiCircularGaugeProps> = ({
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative" style={{ width: `${size}px`, height: `${size-90}px` }}>
+      <div className="relative" style={{ width: `${size}px`, height: `${size - 90}px` }}>
         {data ? (
           <Doughnut data={chartData} options={options} />
         ) : (

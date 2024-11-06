@@ -30,7 +30,7 @@ const PieChart = ({
       .then(response => response.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          const labels = data.map((item: any) => item.status_type);
+          const labels = data.map((item: any) => item.user_type);
           const counts = data.map((item: any) => item.count);
 
           setChartData({

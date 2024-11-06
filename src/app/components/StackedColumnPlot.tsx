@@ -1,5 +1,4 @@
-
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Column } from '@antv/g2plot';
 
 interface DataItem {
@@ -8,39 +7,45 @@ interface DataItem {
   value: number;
 }
 
-const data: DataItem[] = [
-  { category: 'GenAI', type: 'Total Startups', value: 40 },
-  { category: 'GenAI', type: 'Verified Startups', value: 30 },
-  { category: 'ML', type: 'Total Startups', value: 35 },
-  { category: 'ML', type: 'Verified Startups', value: 20 },
-  { category: 'Software Dev', type: 'Total Startups', value: 50 },
-  { category: 'Software Dev', type: 'Verified Startups', value: 25 },
-  { category: 'Cybersec', type: 'Total Startups', value: 45 },
-  { category: 'Cybersec', type: 'Verified Startups', value: 15 },
-  { category: 'Connectivity', type: 'Total Startups', value: 30 },
-  { category: 'Connectivity', type: 'Verified Startups', value: 10 },
-  { category: 'AR/MR/VR', type: 'Total Startups', value: 28 },
-  { category: 'AR/MR/VR', type: 'Verified Startups', value: 14 },
-  { category: 'Cloud and Edge', type: 'Total Startups', value: 38 },
-  { category: 'Cloud and Edge', type: 'Verified Startups', value: 22 },
-  { category: 'Quantum Tech', type: 'Total Startups', value: 40 },
-  { category: 'Quantum Tech', type: 'Verified Startups', value: 18 },
-  { category: 'Robotics', type: 'Total Startups', value: 42 },
-  { category: 'Robotics', type: 'Verified Startups', value: 20 },
-];
+interface StackedColumnChartProps {
+  apiUrl: string;
+}
 
-const StackedColumnChart: React.FC = () => {
+const StackedColumnChart: React.FC<StackedColumnChartProps> = ({ apiUrl }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [data, setData] = useState<DataItem[]>([]);
 
   useEffect(() => {
-    if (containerRef.current) {
+    // Fetch data from the API
+    const fetchData = async () => {
+      try {
+        const response = await fetch(apiUrl);
+        const result = await response.json();
+
+        // Transform the API response to match the chart data format
+        const transformedData: DataItem[] = result.flatMap((item: any) => [
+          { category: item.category, type: 'Total Startups', value: item.total_startups },
+          { category: item.category, type: 'Verified Startups', value: item.verified_startups },
+        ]);
+
+        setData(transformedData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [apiUrl]);
+
+  useEffect(() => {
+    if (containerRef.current && data.length > 0) {
       const stackedColumnPlot = new Column(containerRef.current, {
         data,
         isGroup: true,
         xField: 'category',
         yField: 'value',
         seriesField: 'type',
-        color: ['#1ca9e6', '#f88c24'], 
+        color: ['#1ca9e6', '#f88c24'],
         label: {
           position: 'middle',
           layout: [
@@ -57,15 +62,18 @@ const StackedColumnChart: React.FC = () => {
         stackedColumnPlot.destroy();
       };
     }
-  }, []);
+  }, [data]);
 
-  return <div ref={containerRef} style={{
-    width: '100%',
-    // maxWidth: '1200px', // Set desired maximum width here
-    margin: '0 auto', // Center align if needed
-    height: '500px',  // Adjust height as needed
-  }}
-/>;
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        width: '100%',
+        margin: '0 auto',
+        height: '500px',
+      }}
+    />
+  );
 };
 
 export default StackedColumnChart;

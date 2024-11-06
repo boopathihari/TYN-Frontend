@@ -1,45 +1,55 @@
 // components/GroupedBar.tsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Bar } from '@antv/g2plot';
 
-// Define the data type
 interface DataItem {
   category: string;
   type: string;
   value: number;
 }
 
-const GroupedBar: React.FC = () => {
+interface GroupedBarProps {
+  endpoint: string;
+  categoryKey: string;
+  invitedKey: string;
+  acceptedKey: string;
+  chartHeight?: number;
+}
+
+const GroupedBar: React.FC<GroupedBarProps> = ({
+  endpoint,
+  categoryKey = 'industry',
+  invitedKey = 'invited_count',
+  acceptedKey = 'accepted_count',
+  chartHeight = 600,
+}) => {
   const chartRef = useRef<HTMLDivElement>(null);
+  const [data, setData] = useState<DataItem[]>([]);
 
   useEffect(() => {
-    if (chartRef.current) {
-      const data: DataItem[] = [
-        { category: 'Energy', type: 'Invited', value: 10 },
-        { category: 'Energy', type: 'Accepted', value: 5 },
-        { category: 'Materials', type: 'Invited', value: 13 },
-        { category: 'Materials', type: 'Accepted', value: 9 },
-        { category: 'Industrials', type: 'Invited', value: 11 },
-        { category: 'Industrials', type: 'Accepted', value: 7 },
-        { category: 'Consumer Discretionary', type: 'Invited', value: 16 },
-        { category: 'Consumer Discretionary', type: 'Accepted', value: 12 },
-        { category: 'Consumer Staples', type: 'Invited', value: 15 },
-        { category: 'Consumer Staples', type: 'Accepted', value: 11 },
-        { category: 'Healthcare', type: 'Invited', value: 18 },
-        { category: 'Healthcare', type: 'Accepted', value: 14 },
-        { category: 'Financials', type: 'Invited', value: 8 },
-        { category: 'Financials', type: 'Accepted', value: 4 },
-        { category: 'Information Technology', type: 'Invited', value: 12 },
-        { category: 'Information Technology', type: 'Accepted', value: 9 },
-        { category: 'Communication Services', type: 'Invited', value: 20 },
-        { category: 'Communication Services', type: 'Accepted', value: 15 },
-        { category: 'Utilities', type: 'Invited', value: 2 },
-        { category: 'Utilities', type: 'Accepted', value: 1 },
-        { category: 'Real Estate', type: 'Invited', value: 17 },
-        { category: 'Real Estate', type: 'Accepted', value: 12 },
-      ];
+    const fetchData = async () => {
+      try {
+        const response = await fetch(endpoint);
+        const result = await response.json();
 
-      const stackedBarPlot = new Bar(chartRef.current, {
+        // Format data for the chart
+        const formattedData: DataItem[] = result.flatMap((item: any) => [
+          { category: item[categoryKey], type: 'Invited', value: item[invitedKey] },
+          { category: item[categoryKey], type: 'Accepted', value: item[acceptedKey] },
+        ]);
+
+        setData(formattedData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [endpoint, categoryKey, invitedKey, acceptedKey]);
+
+  useEffect(() => {
+    if (chartRef.current && data.length > 0) {
+      const groupedBarPlot = new Bar(chartRef.current, {
         data,
         isGroup: true,
         xField: 'value',
@@ -53,11 +63,16 @@ const GroupedBar: React.FC = () => {
         barStyle: { radius: [2, 2, 0, 0] },
       });
 
-      stackedBarPlot.render();
-    }
-  }, []);
+      groupedBarPlot.render();
 
-  return <div ref={chartRef} style={{ width: '100%', height: '600px' }} />;
+      // Clean up function to destroy the chart on unmount
+      return () => {
+        groupedBarPlot.destroy();
+      };
+    }
+  }, [data]);
+
+  return <div ref={chartRef} style={{ width: '100%', height: `${chartHeight}px` }} />;
 };
 
 export default GroupedBar;
