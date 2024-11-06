@@ -1,15 +1,15 @@
 // pages/page.tsx
 "use client";
 
-import ConnectionRequestChart from '../components/SemiCircularGauge';
-import SuccessRateChart from '../components/SuccessRateChart';
-import ConversionRateChart from '../components/ConversionRateChart';
-import EnterpriseEngagementChart from '../components/EnterpriseEngagementChart';
-import TimelinePOCChart from '../components/POCTimeline';
-import HorizontalBarChart from '../components/SuccessRateChart';
-import SemiCircularGauge from '../components/SemiCircularGauge';
-import TimelineChart from '../components/POCTimeline';
-import PieChart from '../components/Piechart';
+import ConnectionRequestChart from '../../components/SemiCircularGauge';
+import SuccessRateChart from '../../components/SuccessRateChart';
+import ConversionRateChart from '../../components/ConversionRateChart';
+import EnterpriseEngagementChart from '../../components/EnterpriseEngagementChart';
+import TimelinePOCChart from '../../components/POCTimeline';
+import HorizontalBarChart from '../../components/SuccessRateChart';
+import SemiCircularGauge from '../../components/SemiCircularGauge';
+import TimelineChart from '../../components/POCTimeline';
+import PieChart from '../../components/Piechart';
 
 const Dashboard = () => (
   <div className="p-6 bg-[#f8f9fa]">
